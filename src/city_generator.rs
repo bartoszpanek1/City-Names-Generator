@@ -1,6 +1,9 @@
 use rand::seq::SliceRandom;
 use std::cmp::Ordering;
 use std::collections::HashMap;
+
+/// Struct used for city names generation
+/// Should be constructed using CityGenerator::new(n_b, n_a) function
 pub struct CityGenerator {
     hash_map: HashMap<String, Vec<String>>,
     starting_ngrams: Vec<String>,
@@ -11,6 +14,17 @@ pub struct CityGenerator {
 }
 
 impl CityGenerator {
+    /// Constructs new City Generator
+    ///
+    /// n_b - beginning state (ngram) size
+    /// n_a - other state (ngram) size
+    ///
+    /// # Examples
+    /// Generate one letter basing on two previous letters
+    /// n_b = 2, n_a = 1
+    ///
+    /// Generate two letters basing on two previous letters
+    /// n_b = 2, n_a = 1
     pub fn new(n_b: usize, n_a: usize) -> Self {
         assert!(n_b >= 1 && n_a >= 1);
         CityGenerator {
@@ -28,6 +42,8 @@ impl CityGenerator {
         n_grams_after.push(n_gram_after);
     }
 
+    /// Add a new word to the generator
+    /// Trains Markov Chain using provided word
     pub fn add_word(&mut self, word: &str) -> Result<(), crate::errors::WordError> {
         let word_size = word.chars().count();
         if word_size < self.n_before + self.n_after {
@@ -68,6 +84,11 @@ impl CityGenerator {
         Ok(())
     }
 
+    /// Generates random word
+    /// Uses Markov Chain for generation
+    ///
+    /// len - max size of the word that is going to be generated
+    ///
     pub fn generate_random_word(
         &self,
         len: usize,
