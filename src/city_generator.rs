@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use rand::Rng;
 
 /// Struct used for city names generation
 /// Should be constructed using CityGenerator::new(n_b, n_a) function
@@ -84,43 +85,15 @@ impl CityGenerator {
         Ok(())
     }
 
-    /// Generates random word
+    /// Generates random word with size in range [self.min_len, self.max_len]
     /// Uses Markov Chain for generation
-    ///
-    /// len - max size of the word that is going to be generated
-    ///
     pub fn generate_random_word(
         &self,
-        len: usize,
-    ) -> Result<String, crate::errors::RequestedLengthError> {
+    ) -> Result<String, crate::errors::ChainError> {
         if self.starting_ngrams.is_empty() {
-            panic!("No states added to the Markov Chain");
+            return Err(crate::errors::ChainError::Empty("Markov has no states provided".to_owned()));
         }
-        match len.cmp(&self.min_len) {
-            Ordering::Less => {
-                return Err(crate::errors::RequestedLengthError::TooSmall(
-                    format!(
-                        "requested len '{}' is smaller than the minimum length of '{}'",
-                        len, self.min_len,
-                    )
-                    .to_owned(),
-                ))
-            }
-            _ => (),
-        }
-
-        match len.cmp(&self.max_len) {
-            Ordering::Greater => {
-                return Err(crate::errors::RequestedLengthError::TooSmall(
-                    format!(
-                        "requested len '{}' is greater than the maximum length of '{}'",
-                        len, self.max_len,
-                    )
-                    .to_owned(),
-                ))
-            }
-            _ => (),
-        }
+        let len = rand::thread_rng().gen_range(self.get_min_len()..self.get_max_len()+1);
 
         let mut word = self
             .starting_ngrams
@@ -149,4 +122,13 @@ impl CityGenerator {
         }
         Ok(word)
     }
+
+    pub fn get_min_len(&self) -> usize {
+        self.min_len
+    }
+
+    pub fn get_max_len(&self) -> usize {
+        self.max_len
+    }
+
 }
