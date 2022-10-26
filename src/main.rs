@@ -9,6 +9,9 @@ use std::error::Error;
 mod city_generator;
 mod errors;
 
+/// Struct used for saving config arguments
+/// country - country code (possible choices: pl, jp, ua, uk)
+/// n - number of requeested randomly generated city names
 struct Config {
     country: String,
     n: usize
@@ -45,15 +48,15 @@ fn main() {
 
 }
 
-
+/// Runs the program
+/// Prints generated cities or panics with an error
 fn run(config: Config) -> Result<(), Box<dyn Error>>{
 
     // hardcoded settings for city generation for every country
-    // country_code => (n_b, n_a, file path)
     let city_settings: HashMap<&str, (usize, usize, &str)> = HashMap::from([
-        ("pl", (2, 1, "pl_cities.txt")),
+        ("pl", (4, 2, "pl_cities.txt")),
         ("jp", (2, 2, "jp_cities.txt")),
-        ("uk", (3, 3, "uk_cities.txt")),
+        ("uk", (4, 3, "uk_cities.txt")),
         ("ua", (3, 1, "ua_cities.txt")),
     ]);
 
